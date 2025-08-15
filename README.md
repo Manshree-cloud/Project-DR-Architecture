@@ -55,5 +55,5 @@ aws cloudformation wait stack-delete-complete --stack-name dr-primary --region c
 
 **Screenshot:**
 
-![Primary Server OK](demo/failover-test-screenshots/primary-ok.png)
+![Primary Server OK](demo/failover-test-screenshots/screenshot web1.png)
 
