@@ -45,9 +45,4 @@ aws cloudformation delete-stack --stack-name dr-primary --region ca-central-1
 aws cloudformation wait stack-delete-complete --stack-name dr-primary --region ca-central-1
 ```
 
-## Next (Day 2+)
-- Add ALB (public) -> ASG targets
-- Private subnets + NAT (optional) and SSM Session Manager instead of SSH
-- RDS Multi-AZ (db.t3.micro) + SG rules
-- Secondary region stack + Route 53 failover
-- S3 + CRR, WAF, CloudWatch alarms
+
