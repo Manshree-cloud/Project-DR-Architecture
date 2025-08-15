@@ -1,0 +1,223 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  Project 1 - Day 1: Baseline VPC with public subnets and an Auto Scaling Group (min=1) 
+  launching Amazon Linux 2023 with NGINX that shows Region & Instance ID. Primary region only.
+
+Parameters:
+  EnvironmentName:
+    Type: String
+    Default: prod
+    AllowedPattern: '^[a-z0-9-]+$'
+    Description: Short name used in resource tags (e.g., prod, test).
+  VpcCidr:
+    Type: String
+    Default: 10.0.0.0/16
+    Description: CIDR for the VPC.
+  PublicSubnet1Cidr:
+    Type: String
+    Default: 10.0.0.0/24
+  PublicSubnet2Cidr:
+    Type: String
+    Default: 10.0.1.0/24
+  KeyName:
+    Type: String
+    Default: ''
+    Description: Optional EC2 KeyPair name for SSH. Leave blank to skip.
+  SSHLocation:
+    Type: String
+    Default: 0.0.0.0/0
+    Description: CIDR that can SSH to instances (if KeyName is set).
+  InstanceType:
+    Type: String
+    Default: t3.micro
+    AllowedValues:
+      - t3.micro
+      - t3.small
+      - t3.medium
+      - t4g.micro
+      - t4g.small
+      - t4g.medium
+    Description: Instance type for web servers.
+  DesiredCapacity:
+    Type: Number
+    Default: 1
+  MinSize:
+    Type: Number
+    Default: 1
+  MaxSize:
+    Type: Number
+    Default: 1
+  LatestAmiId:
+    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+
+Conditions:
+  KeyProvided: !Not [!Equals [!Ref KeyName, ""]]
+
+Resources:
+
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCidr
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      Tags:
+        - Key: Name
+          Value: !Sub '${EnvironmentName}-vpc'
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub '${EnvironmentName}-igw'
+
+  VPCGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref InternetGateway
+      VpcId: !Ref VPC
+
+  PublicSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Ref PublicSubnet1Cidr
+      MapPublicIpOnLaunch: true
+      AvailabilityZone: !Select [0, !GetAZs '']
+      Tags:
+        - Key: Name
+          Value: !Sub '${EnvironmentName}-public-az1'
+
+  PublicSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Ref PublicSubnet2Cidr
+      MapPublicIpOnLaunch: true
+      AvailabilityZone: !Select [1, !GetAZs '']
+      Tags:
+        - Key: Name
+          Value: !Sub '${EnvironmentName}-public-az2'
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub '${EnvironmentName}-public-rtb'
+
+  PublicRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  SubnetRouteTableAssociation1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref PublicSubnet1
+
+  SubnetRouteTableAssociation2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref PublicSubnet2
+
+  WebServerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable HTTP (80) and conditional SSH (22).
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - !If 
+          - KeyProvided
+          - IpProtocol: tcp
+            FromPort: 22
+            ToPort: 22
+            CidrIp: !Ref SSHLocation
+          - !Ref 'AWS::NoValue'
+      Tags:
+        - Key: Name
+          Value: !Sub '${EnvironmentName}-web-sg'
+
+  LaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateData:
+        ImageId: !Ref LatestAmiId
+        InstanceType: !Ref InstanceType
+        KeyName: !If [KeyProvided, !Ref KeyName, !Ref 'AWS::NoValue']
+        NetworkInterfaces:
+          - AssociatePublicIpAddress: true
+            DeviceIndex: 0
+            Groups:
+              - !Ref WebServerSecurityGroup
+        TagSpecifications:
+          - ResourceType: instance
+            Tags:
+              - Key: Name
+                Value: !Sub '${EnvironmentName}-web'
+        UserData:
+          Fn::Base64: !Sub |
+            #!/bin/bash
+            set -xe
+            dnf -y update
+            dnf -y install nginx
+            systemctl enable nginx
+            INSTANCE_ID="$(curl -s http://169.254.169.254/latest/meta-data/instance-id)"
+            AZ="$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone)"
+            cat >/usr/share/nginx/html/index.html <<'EOF'
+            <html><body>
+            <h1>DR App - Primary Region</h1>
+            <p><b>Region:</b> ${AWS::Region}</p>
+            <p><b>AZ:</b> $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone)</p>
+            <p><b>Instance:</b> $(curl -s http://169.254.169.254/latest/meta-data/instance-id)</p>
+            </body></html>
+            EOF
+            systemctl start nginx
+
+  AutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      VPCZoneIdentifier:
+        - !Ref PublicSubnet1
+        - !Ref PublicSubnet2
+      LaunchTemplate:
+        LaunchTemplateId: !Ref LaunchTemplate
+        Version: !GetAtt LaunchTemplate.LatestVersionNumber
+      MinSize: !Ref MinSize
+      MaxSize: !Ref MaxSize
+      DesiredCapacity: !Ref DesiredCapacity
+      HealthCheckType: EC2
+      Tags:
+        - Key: Name
+          Value: !Sub '${EnvironmentName}-asg'
+          PropagateAtLaunch: true
+    UpdatePolicy:
+      AutoScalingRollingUpdate:
+        MinInstancesInService: 1
+        MaxBatchSize: 1
+        PauseTime: PT2M
+
+Outputs:
+  VpcId:
+    Description: VPC ID
+    Value: !Ref VPC
+  PublicSubnetIds:
+    Description: Public subnet IDs
+    Value: !Join [",", [!Ref PublicSubnet1, !Ref PublicSubnet2]]
+  WebSecurityGroupId:
+    Description: Security group for web
+    Value: !Ref WebServerSecurityGroup
+  AsgName:
+    Description: Auto Scaling Group name
+    Value: !Ref AutoScalingGroup

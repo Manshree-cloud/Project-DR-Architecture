@@ -1,0 +1,16 @@
+# General
+.DS_Store
+*.log
+*.tmp
+*.zip
+
+# Python/Node artifacts (if any later)
+__pycache__/
+node_modules/
+
+# AWS / IDE
+*.iml
+.idea/
+.vscode/
+*.tfstate*
+.terraform/
