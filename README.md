@@ -45,4 +45,15 @@ aws cloudformation delete-stack --stack-name dr-primary --region ca-central-1
 aws cloudformation wait stack-delete-complete --stack-name dr-primary --region ca-central-1
 ```
 
+## Day 1 — Verified Primary Region Server
+
+**Public DNS Tested:** ec2-15-223-54-58.ca-central-1.compute.amazonaws.com
+
+**Notes:**
+- Used `dr-key.pem` for SSH access to the EC2 instance.
+- Verified the Apache/Nginx server is running and the HTML dashboard is displaying.
+
+**Screenshot:**
+
+![Primary Server OK](demo/failover-test-screenshots/screenshot web1.png)
 
