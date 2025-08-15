@@ -1,35 +1,57 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>DR App - Multi-Region Dashboard</title>
-  <style>
-    body { font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 20px; }
-    h1 { color: #2c3e50; }
-    table { width: 60%; border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid #34495e; padding: 10px; text-align: center; }
-    th { background-color: #34495e; color: white; }
-    tr:nth-child(even) { background-color: #ecf0f1; }
-  </style>
+  <title>Multi-Region DR Dashboard</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>DR App - Multi-Region Dashboard</h1>
-  <table>
-    <tr>
-      <th>Region</th>
-      <th>Availability Zone</th>
-      <th>Instance ID</th>
-    </tr>
-    <tr>
-      <td>Primary (ca-central-1)</td>
-      <td>ca-central-1a</td>
-      <td>i-09a9c4814aaf7445e</td>
-    </tr>
-    <tr>
-      <td>DR (us-east-1)</td>
-      <td>us-east-1a</td>
-      <td>i-0abcdef1234567890</td>
-    </tr>
-  </table>
+  <header>
+    <h1>Multi-Region Disaster Recovery Dashboard</h1>
+    <p>Primary & DR region status</p>
+  </header>
+
+  <section class="region-cards">
+    <div class="card primary">
+      <h2>Primary Region</h2>
+      <p>Region: ca-central-1</p>
+      <p>AZ: ca-central-1a</p>
+      <p>Instance: i-09a9c4814aaf7445e</p>
+    </div>
+    <div class="card dr">
+      <h2>DR Region</h2>
+      <p>Region: us-east-1</p>
+      <p>AZ: us-east-1a</p>
+      <p>Instance: i-0abcdef1234567890</p>
+    </div>
+  </section>
+
+  <section class="status-table">
+    <h2>Instance Status</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Region</th>
+          <th>AZ</th>
+          <th>Instance ID</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Primary</td>
+          <td>ca-central-1a</td>
+          <td>i-09a9c4814aaf7445e</td>
+          <td>Running</td>
+        </tr>
+        <tr>
+          <td>DR</td>
+          <td>us-east-1a</td>
+          <td>i-0abcdef1234567890</td>
+          <td>Running</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
 </body>
 </html>
