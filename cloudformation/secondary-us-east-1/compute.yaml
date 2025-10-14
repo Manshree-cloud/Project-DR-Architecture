@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Secondary compute: SGs, Launch Template, ASG (warm standby), ALB, TargetGroup, Listener
+Description: "Secondary compute: SGs, Launch Template, ASG (warm standby), ALB, TargetGroup, Listener"
 
 Parameters:
   StackPrefix:
@@ -10,21 +10,20 @@ Parameters:
     Default: t3.micro
   AmiId:
     Type: AWS::EC2::Image::Id
-    Description: AL2/AL2023 AMI ID for us-east-1
+    Description: "AL2/AL2023 AMI ID for us-east-1"
   PublicSubnet1Id:
     Type: AWS::EC2::Subnet::Id
   PublicSubnet2Id:
     Type: AWS::EC2::Subnet::Id
   UserDataScript:
     Type: String
-    Description: Base64-encoded user data
+    Description: "Base64-encoded user data"
 
 Resources:
-  # Security Groups
   AlbSG:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Allow HTTP from Internet
+      GroupDescription: "Allow HTTP from Internet"
       VpcId: !ImportValue dr-secondary-VpcId
       SecurityGroupIngress:
         - CidrIp: 0.0.0.0/0
@@ -33,16 +32,16 @@ Resources:
           ToPort: 80
       Tags:
         - Key: Name
-          Value: !Sub '${StackPrefix}-alb-sg'
+          Value: !Sub "${StackPrefix}-alb-sg"
 
   WebSG:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Allow HTTP only from ALB
+      GroupDescription: "Allow HTTP only from ALB"
       VpcId: !ImportValue dr-secondary-VpcId
       Tags:
         - Key: Name
-          Value: !Sub '${StackPrefix}-web-sg'
+          Value: !Sub "${StackPrefix}-web-sg"
 
   WebFromAlb:
     Type: AWS::EC2::SecurityGroupIngress
@@ -53,7 +52,6 @@ Resources:
       ToPort: 80
       SourceSecurityGroupId: !Ref AlbSG
 
-  # Target Group, ALB, Listener
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
@@ -63,10 +61,10 @@ Resources:
       TargetType: instance
       HealthCheckPath: /
       Matcher:
-        HttpCode: '200-399'
+        HttpCode: "200-399"
       Tags:
         - Key: Name
-          Value: !Sub '${StackPrefix}-tg'
+          Value: !Sub "${StackPrefix}-tg"
 
   ALB:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
@@ -79,10 +77,10 @@ Resources:
         - !Ref AlbSG
       LoadBalancerAttributes:
         - Key: idle_timeout.timeout_seconds
-          Value: '60'
+          Value: "60"
       Tags:
         - Key: Name
-          Value: !Sub '${StackPrefix}-alb'
+          Value: !Sub "${StackPrefix}-alb"
 
   Listener80:
     Type: AWS::ElasticLoadBalancingV2::Listener
@@ -94,7 +92,6 @@ Resources:
         - Type: forward
           TargetGroupArn: !Ref TargetGroup
 
-  # Launch Template + ASG (warm standby)
   LaunchTemplate:
     Type: AWS::EC2::LaunchTemplate
     Properties:
@@ -104,11 +101,11 @@ Resources:
         SecurityGroupIds:
           - !Ref WebSG
         UserData: !Ref UserDataScript
-      TagSpecifications:
-        - ResourceType: launch-template
-          Tags:
-            - Key: Name
-              Value: !Sub '${StackPrefix}-lt'
+        TagSpecifications:
+          - ResourceType: instance
+            Tags:
+              - Key: Name
+                Value: !Sub "${StackPrefix}-instance"
 
   ASG:
     Type: AWS::AutoScaling::AutoScalingGroup
@@ -116,9 +113,9 @@ Resources:
       VPCZoneIdentifier:
         - !Ref PublicSubnet1Id
         - !Ref PublicSubnet2Id
-      MinSize: '0'           # warm standby
-      DesiredCapacity: '0'   # warm standby
-      MaxSize: '2'
+      MinSize: "0"          # warm standby
+      DesiredCapacity: "0"  # warm standby
+      MaxSize: "2"
       TargetGroupARNs:
         - !Ref TargetGroup
       LaunchTemplate:
@@ -128,18 +125,18 @@ Resources:
       HealthCheckGracePeriod: 90
       Tags:
         - Key: Name
-          Value: !Sub '${StackPrefix}-asg'
+          Value: !Sub "${StackPrefix}-asg"
           PropagateAtLaunch: true
     UpdatePolicy:
       AutoScalingRollingUpdate:
-        MinInstancesInService: '0'
-        MaxBatchSize: '1'
+        MinInstancesInService: "0"
+        MaxBatchSize: "1"
         PauseTime: PT2M
 
 Outputs:
- AlbDnsName:
-    Description: Secondary ALB DNS name
+  AlbDnsName:
+    Description: "Secondary ALB DNS name"
     Value: !GetAtt ALB.DNSName
   AsgName:
-    Description: Secondary ASG name
+    Description: "Secondary ASG name"
     Value: !Ref ASG

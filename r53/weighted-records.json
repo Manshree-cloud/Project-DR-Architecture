@@ -1,0 +1,33 @@
+{
+  "Comment": "Weighted alias to ALBs for DR demo",
+  "Changes": [
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "www.dr-demo-example.com",
+        "Type": "A",
+        "SetIdentifier": "primary",
+        "Weight": 100,
+        "AliasTarget": {
+          "HostedZoneId": "ZQSVJUPU6J1EY",
+          "DNSName": "dualstack.dr-cmp-p-ALB-U92rcSjqY7PA-116348361.ca-central-1.elb.amazonaws.com.",
+          "EvaluateTargetHealth": true
+        }
+      }
+    },
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "www.dr-demo-example.com",
+        "Type": "A",
+        "SetIdentifier": "secondary",
+        "Weight": 0,
+        "AliasTarget": {
+          "HostedZoneId": "Z35SXDOTRQ7X7K",
+          "DNSName": "dualstack.dr-cmp-s-ALB-8KSJSALiRZzg-1032845872.us-east-1.elb.amazonaws.com.",
+          "EvaluateTargetHealth": true
+        }
+      }
+    }
+  ]
+}

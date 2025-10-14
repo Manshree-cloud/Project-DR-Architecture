@@ -92,7 +92,7 @@ Resources:
         - Type: forward
           TargetGroupArn: !Ref TargetGroup
 
-    LaunchTemplate:
+  LaunchTemplate:
     Type: AWS::EC2::LaunchTemplate
     Properties:
       LaunchTemplateData:
@@ -101,11 +101,11 @@ Resources:
         SecurityGroupIds:
           - !Ref WebSG
         UserData: !Ref UserDataScript
-      TagSpecifications:
-        - ResourceType: instance        # << change from 'launch-template'
-          Tags:
-            - Key: Name
-              Value: !Sub "${StackPrefix}-lt"
+        TagSpecifications:
+          - ResourceType: instance
+            Tags:
+              - Key: Name
+                Value: !Sub "${StackPrefix}-instance"
 
   ASG:
     Type: AWS::AutoScaling::AutoScalingGroup
