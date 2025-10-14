@@ -1,12 +1,36 @@
-# Project 1 — Multi-Region Disaster Recovery 
+# 🏗️ Project DR Architecture — Multi-Region AWS Disaster Recovery 
 
-**Primary Region:** `ca-central-1` (Canada Central)  
-**Goal :** Repo + baseline VPC + single EC2 via ASG in public subnets using CloudFormation. NGINX serves a page showing region & instance ID.
+This repository contains a **cost-aware two-region Disaster Recovery (DR) reference architecture on AWS** using CloudFormation.  
+It showcases how to architect, deploy, and fail over a simple workload between regions in minutes.
 
-## Repo Name
-`aws-multiregion-dr-architecture`
+---
 
-## Folder Structure
+## ✨ Key Highlights 
+
+- **Architected a cost-aware two-region DR reference using custom VPCs, EC2 Launch Templates + ASG, and CloudFormation templates for reproducibility and peer review.**  
+- **Implemented S3 Cross-Region Replication (versioning + SSE) and validated failover; enforced IAM replication roles and least-privilege access for durability and security.**  
+- **Integrated monitoring, identity management, and failover automation into enterprise systems to ensure continuity with <5 min RTO with before/after validation screenshots.**  
+- **Configured CloudWatch alarms + SNS alerts (ASG health, EC2 CPU) for operational signaling; documented runbooks, diagrams, and recovery/cleanup steps.**  
+- **Applied Infrastructure as Code principles using CloudFormation and began modular Terraform prototypes for DR provisioning (state mgmt. via S3+DynamoDB), demonstrating cross-tool IaC capability.**  
+- **Mapped AWS patterns to Azure/GCP equivalents (EC2/ASG→VMSS, S3→Blob, CloudWatch→Monitor/Log Analytics, IAM→RBAC; Lambda→Functions/Run).**
+
+---
+
+## 🏗️ Architecture Overview
+
+- **Primary Region:** `ca-central-1` 🇨🇦  
+- **Secondary Region:** `us-east-1` 🇺🇸  
+- **Core Components:**
+  - VPC, Public Subnets, ALB + ASG (EC2 NGINX “Hello from REGION”)
+  - Route 53 DNS failover with Health Checks
+  - S3 Cross-Region Replication
+  - CloudWatch + SNS for monitoring and alerting
+  - IAM least privilege for replication and automation
+  - IaC using CloudFormation with Terraform scaffold for future portability
+
+---
+
+## 📂 Folder Structure
 ```
 aws-multi-region-dr-reference/
 ├─ README.md
