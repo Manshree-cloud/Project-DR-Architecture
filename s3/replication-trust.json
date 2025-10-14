@@ -1,0 +1,11 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect":"Allow",
+      "Principal":{"Service":"s3.amazonaws.com"},
+      "Action":"sts:AssumeRole",
+      "Condition":{"StringEquals":{"aws:SourceAccount":"517436090454"}}
+    }
+  ]
+}

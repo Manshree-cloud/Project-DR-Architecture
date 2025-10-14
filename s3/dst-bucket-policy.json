@@ -1,0 +1,28 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowReplicationFromSourceRole",
+      "Effect": "Allow",
+      "Principal": {"AWS": "arn:aws:iam::517436090454:role/dr-s3-replication-role"},
+      "Action": [
+        "s3:ReplicateObject",
+        "s3:ReplicateDelete",
+        "s3:ReplicateTags",
+        "s3:ObjectOwnerOverrideToBucketOwner",
+        "s3:PutObject"
+      ],
+      "Resource": "arn:aws:s3:::mansh-517436090454-us-east-1-dr-dst/*"
+    },
+    {
+      "Sid": "AllowGetBucketVersioning",
+      "Effect": "Allow",
+      "Principal": {"AWS": "arn:aws:iam::517436090454:role/dr-s3-replication-role"},
+      "Action": [
+        "s3:GetBucketVersioning",
+        "s3:PutBucketVersioning"
+      ],
+      "Resource": "arn:aws:s3:::mansh-517436090454-us-east-1-dr-dst"
+    }
+  ]
+}

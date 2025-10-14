@@ -1,0 +1,18 @@
+{
+  "Role": "arn:aws:iam::517436090454:role/dr-s3-replication-role",
+  "Rules": [
+    {
+      "ID": "replicate-all",
+      "Status": "Enabled",
+      "Priority": 1,
+      "DeleteMarkerReplication": {"Status": "Enabled"},
+      "Filter": {},
+      "Destination": {
+        "Bucket": "arn:aws:s3:::mansh-517436090454-us-east-1-dr-dst",
+        "Account": "517436090454",
+        "AccessControlTranslation": {"Owner": "Destination"},
+        "Metrics": {"Status": "Disabled"}
+      }
+    }
+  ]
+}
