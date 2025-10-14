@@ -1,17 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 AWSTemplateFormatVersion: '2010-09-09'
 Description: "Primary compute: SGs, Launch Template, ASG, ALB, TargetGroup, Listener"
 
@@ -106,7 +92,7 @@ Resources:
         - Type: forward
           TargetGroupArn: !Ref TargetGroup
 
-  LaunchTemplate:
+    LaunchTemplate:
     Type: AWS::EC2::LaunchTemplate
     Properties:
       LaunchTemplateData:
@@ -116,7 +102,7 @@ Resources:
           - !Ref WebSG
         UserData: !Ref UserDataScript
       TagSpecifications:
-        - ResourceType: launch-template
+        - ResourceType: instance        # << change from 'launch-template'
           Tags:
             - Key: Name
               Value: !Sub "${StackPrefix}-lt"
