@@ -5,6 +5,7 @@ Parameters:
   StackPrefix:
     Type: String
     Default: dr-secondary
+    Description: Prefix used for names/exports (unique per environment)
   VpcCidr:
     Type: String
     Default: 10.20.0.0/16
@@ -22,12 +23,16 @@ Resources:
       CidrBlock: !Ref VpcCidr
       EnableDnsHostnames: true
       EnableDnsSupport: true
-      Tags: [ { Key: Name, Value: !Sub '${StackPrefix}-vpc' } ]
+      Tags:
+        - Key: Name
+          Value: !Sub '${StackPrefix}-vpc'
 
   IGW:
     Type: AWS::EC2::InternetGateway
     Properties:
-      Tags: [ { Key: Name, Value: !Sub '${StackPrefix}-igw' } ]
+      Tags:
+        - Key: Name
+          Value: !Sub '${StackPrefix}-igw'
 
   AttachIgw:
     Type: AWS::EC2::VPCGatewayAttachment
@@ -39,25 +44,31 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
-      AvailabilityZone: !select [ 0, !GetAZs '']
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
       CidrBlock: !Ref PublicSubnet1Cidr
       MapPublicIpOnLaunch: true
-      Tags: [ { Key: Name, Value: !Sub '${StackPrefix}-public-a' } ]
+      Tags:
+        - Key: Name
+          Value: !Sub '${StackPrefix}-public-a'
 
   PublicSubnet2:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
-      AvailabilityZone: !select [ 1, !GetAZs '']
+      AvailabilityZone: !Select [ 1, !GetAZs '' ]
       CidrBlock: !Ref PublicSubnet2Cidr
       MapPublicIpOnLaunch: true
-      Tags: [ { Key: Name, Value: !Sub '${StackPrefix}-public-b' } ]
+      Tags:
+        - Key: Name
+          Value: !Sub '${StackPrefix}-public-b'
 
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref VPC
-      Tags: [ { Key: Name, Value: !Sub '${StackPrefix}-public-rt' } ]
+      Tags:
+        - Key: Name
+          Value: !Sub '${StackPrefix}-public-rt'
 
   DefaultRoute:
     Type: AWS::EC2::Route

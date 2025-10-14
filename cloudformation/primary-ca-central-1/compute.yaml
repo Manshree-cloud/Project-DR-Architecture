@@ -1,5 +1,19 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Primary compute: SGs, Launch Template, ASG, ALB, TargetGroup, Listener
+Description: "Primary compute: SGs, Launch Template, ASG, ALB, TargetGroup, Listener"
 
 Parameters:
   StackPrefix:
@@ -10,35 +24,38 @@ Parameters:
     Default: t3.micro
   AmiId:
     Type: AWS::EC2::Image::Id
-    Description: AL2/AL2023 AMI ID for ca-central-1
+    Description: "AL2/AL2023 AMI ID for ca-central-1"
   PublicSubnet1Id:
     Type: AWS::EC2::Subnet::Id
   PublicSubnet2Id:
     Type: AWS::EC2::Subnet::Id
   UserDataScript:
     Type: String
-    Description: Base64-encoded user data
+    Description: "Base64-encoded user data"
 
 Resources:
-  # Security Groups
   AlbSG:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Allow HTTP from Internet
+      GroupDescription: "Allow HTTP from Internet"
       VpcId: !ImportValue dr-primary-VpcId
       SecurityGroupIngress:
         - CidrIp: 0.0.0.0/0
           IpProtocol: tcp
           FromPort: 80
           ToPort: 80
-      Tags: [{ Key: Name, Value: !Sub '${StackPrefix}-alb-sg' }]
+      Tags:
+        - Key: Name
+          Value: !Sub "${StackPrefix}-alb-sg"
 
   WebSG:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Allow HTTP only from ALB
+      GroupDescription: "Allow HTTP only from ALB"
       VpcId: !ImportValue dr-primary-VpcId
-      Tags: [{ Key: Name, Value: !Sub '${StackPrefix}-web-sg' }]
+      Tags:
+        - Key: Name
+          Value: !Sub "${StackPrefix}-web-sg"
 
   WebFromAlb:
     Type: AWS::EC2::SecurityGroupIngress
@@ -49,7 +66,6 @@ Resources:
       ToPort: 80
       SourceSecurityGroupId: !Ref AlbSG
 
-  # Target Group, ALB, Listener
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
@@ -58,7 +74,11 @@ Resources:
       Port: 80
       TargetType: instance
       HealthCheckPath: /
-      Matcher: { HttpCode: '200-399' }
+      Matcher:
+        HttpCode: "200-399"
+      Tags:
+        - Key: Name
+          Value: !Sub "${StackPrefix}-tg"
 
   ALB:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
@@ -67,10 +87,14 @@ Resources:
       Subnets:
         - !Ref PublicSubnet1Id
         - !Ref PublicSubnet2Id
-      SecurityGroups: [!Ref AlbSG]
+      SecurityGroups:
+        - !Ref AlbSG
       LoadBalancerAttributes:
         - Key: idle_timeout.timeout_seconds
-          Value: '60'
+          Value: "60"
+      Tags:
+        - Key: Name
+          Value: !Sub "${StackPrefix}-alb"
 
   Listener80:
     Type: AWS::ElasticLoadBalancingV2::Listener
@@ -82,15 +106,20 @@ Resources:
         - Type: forward
           TargetGroupArn: !Ref TargetGroup
 
-  # Launch Template + ASG
   LaunchTemplate:
     Type: AWS::EC2::LaunchTemplate
     Properties:
       LaunchTemplateData:
         ImageId: !Ref AmiId
         InstanceType: !Ref InstanceType
-        SecurityGroupIds: [!Ref WebSG]
+        SecurityGroupIds:
+          - !Ref WebSG
         UserData: !Ref UserDataScript
+      TagSpecifications:
+        - ResourceType: launch-template
+          Tags:
+            - Key: Name
+              Value: !Sub "${StackPrefix}-lt"
 
   ASG:
     Type: AWS::AutoScaling::AutoScalingGroup
@@ -98,23 +127,30 @@ Resources:
       VPCZoneIdentifier:
         - !Ref PublicSubnet1Id
         - !Ref PublicSubnet2Id
-      MinSize: '1'
-      DesiredCapacity: '1'
-      MaxSize: '2'
-      TargetGroupARNs: [!Ref TargetGroup]
+      MinSize: "1"
+      DesiredCapacity: "1"
+      MaxSize: "2"
+      TargetGroupARNs:
+        - !Ref TargetGroup
       LaunchTemplate:
         LaunchTemplateId: !Ref LaunchTemplate
         Version: !GetAtt LaunchTemplate.LatestVersionNumber
       HealthCheckType: ELB
       HealthCheckGracePeriod: 90
+      Tags:
+        - Key: Name
+          Value: !Sub "${StackPrefix}-asg"
+          PropagateAtLaunch: true
     UpdatePolicy:
       AutoScalingRollingUpdate:
-        MinInstancesInService: '1'
-        MaxBatchSize: '1'
+        MinInstancesInService: "1"
+        MaxBatchSize: "1"
         PauseTime: PT2M
 
 Outputs:
   AlbDnsName:
+    Description: "Primary ALB DNS name"
     Value: !GetAtt ALB.DNSName
   AsgName:
+    Description: "Primary ASG name"
     Value: !Ref ASG
