@@ -1,4 +1,4 @@
-# Project 1 — Multi-Region Disaster Recovery (Day 1 Starter)
+# Project 1 — Multi-Region Disaster Recovery 
 
 **Primary Region (today):** `ca-central-1` (Canada Central)  
 **Goal (Day 1 ~90 min):** Repo + baseline VPC + single EC2 via ASG in public subnets using CloudFormation. NGINX serves a page showing region & instance ID.
