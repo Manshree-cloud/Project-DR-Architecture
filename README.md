@@ -79,5 +79,6 @@ aws-multi-region-dr-reference/
 
 ✅ **Failover succeeded in under 5 minutes without manual DNS changes.**
 
-### 🏗️ Architecture Overview
-![Architecture Diagram](docs/architecture.png)
+## 🎥 Demo Video
+[AWS DR Failover — Route 53 to ALB (1:30)](./docs/aws-dr-failover-demo.mp4)
+
