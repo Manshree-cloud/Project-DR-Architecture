@@ -8,52 +8,38 @@
 
 ## Folder Structure
 ```
-Project1-DR-Architecture/
-├─ cloudformation/
-│  └─ network-app.yml
-├─ scripts/
-│  └─ deploy-primary.sh
+aws-multi-region-dr-reference/
+├─ README.md
 ├─ diagrams/
-├─ demo/
-│  └─ failover-test-screenshots/
-└─ .gitignore
-```
-
-## Prereqs
-- AWS CLI v2 configured (`aws configure`) with a profile that has permissions to create VPC, EC2, ASG, and IAM (no custom IAM resources used on Day 1).
-- Key pair in `ca-central-1` (for optional SSH), or create one from EC2 Console.
-- (Optional) GitHub account ready for new repo.
-
-## Quick Start (Primary Region Deploy)
-1. Validate template:
-   ```bash
-   aws cloudformation validate-template --template-body file://cloudformation/network-app.yml
-   ```
-2. Deploy (replace placeholders as needed):
-   ```bash
-   bash scripts/deploy-primary.sh
-   ```
-3. After CREATE_COMPLETE, get public DNS of instance via EC2 console or:
-   ```bash
-   aws ec2 describe-instances --filters "Name=tag:aws:autoscaling:groupName,Values=dr-primary-asg"      --region ca-central-1 --query "Reservations[].Instances[].PublicDnsName" --output text
-   ```
-   Open `http://<public-dns>` to see the NGINX page showing region and instance metadata.
-
-## Clean Up (to avoid charges)
-```bash
-aws cloudformation delete-stack --stack-name dr-primary --region ca-central-1
-aws cloudformation wait stack-delete-complete --stack-name dr-primary --region ca-central-1
-```
-
-## Day 1 — Verified Primary Region Server
-
-**Public DNS Tested:** ec2-15-223-54-58.ca-central-1.compute.amazonaws.com
-
-**Notes:**
-- Used `dr-key.pem` for SSH access to the EC2 instance.
-- Verified the Apache/Nginx server is running and the HTML dashboard is displaying.
-
-**Screenshot:**
-
-![Primary Server OK](demo/failover-test-screenshots/screenshot web1.png)
+│  └─ dr-architecture.drawio  (export PNG later)
+├─ cloudformation/
+│  ├─ primary-ca-central-1/
+│  │  ├─ network.yaml            # VPC, subnets, IGW, NAT, route tables
+│  │  ├─ compute.yaml            # LT, ASG, ALB, SGs, TargetGroup, Listener
+│  │  ├─ s3-primary.yaml         # Primary S3 bucket (versioning, SSE)
+│  │  └─ outputs.md
+│  ├─ secondary-us-east-1/
+│  │  ├─ network.yaml
+│  │  ├─ compute.yaml
+│  │  ├─ s3-secondary.yaml       # Secondary S3 bucket + replication role trust
+│  │  └─ outputs.md
+│  └─ global/
+│     ├─ route53-failover.yaml   # Hosted zone records + health check
+│     └─ sns-alarms.yaml         # SNS topic + subscriptions, CW alarms
+├─ user-data/
+│  └─ nginx-bootstrap.sh         # prints “Hello from $REGION”
+├─ runbooks/
+│  ├─ 01-deploy.md
+│  ├─ 02-failover-test.md
+│  ├─ 03-rollback-cleanup.md
+│  └─ 04-alarms-and-screenshots.md
+├─ terraform-prototype/
+│  ├─ modules/
+│  │  └─ vpc/ (scaffold only)
+│  └─ main.tf  (commented placeholders)
+└─ scripts/
+   ├─ deploy_primary.sh
+   ├─ deploy_secondary.sh
+   ├─ setup_replication.sh
+   └─ teardown.sh
 
