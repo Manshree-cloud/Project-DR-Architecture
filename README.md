@@ -66,8 +66,8 @@ aws-multi-region-dr-reference/
    ├─ deploy_secondary.sh
    ├─ setup_replication.sh
    └─ teardown.sh
-
-## 📊 DR Failover Demo — Route 53 + ALB
+```
+ 📊 DR Failover Demo — Route 53 + ALB
 
 | Step | Description                           | Evidence |
 |------|---------------------------------------|-----------|
