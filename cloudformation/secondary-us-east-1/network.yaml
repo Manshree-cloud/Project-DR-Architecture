@@ -15,12 +15,6 @@ Parameters:
     Type: String
     Default: 10.20.2.0/24
 
-Mappings:
-  RegionMap:
-    us-east-1:
-      AZ1: a
-      AZ2: b
-
 Resources:
   VPC:
     Type: AWS::EC2::VPC
@@ -45,7 +39,7 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
-      AvailabilityZone: !Sub 'us-east-1${RegionMap.us-east-1.AZ1}'
+      AvailabilityZone: !select [ 0, !GetAZs '']
       CidrBlock: !Ref PublicSubnet1Cidr
       MapPublicIpOnLaunch: true
       Tags: [ { Key: Name, Value: !Sub '${StackPrefix}-public-a' } ]
@@ -54,7 +48,7 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
-      AvailabilityZone: !Sub 'us-east-1${RegionMap.us-east-1.AZ2}'
+      AvailabilityZone: !select [ 1, !GetAZs '']
       CidrBlock: !Ref PublicSubnet2Cidr
       MapPublicIpOnLaunch: true
       Tags: [ { Key: Name, Value: !Sub '${StackPrefix}-public-b' } ]
