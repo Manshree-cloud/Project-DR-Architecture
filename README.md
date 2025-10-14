@@ -67,3 +67,17 @@ aws-multi-region-dr-reference/
    ├─ setup_replication.sh
    └─ teardown.sh
 
+## 📊 DR Failover Demo — Route 53 + ALB
+
+| Step | Description                           | Evidence |
+|------|---------------------------------------|-----------|
+| 1    | Initial DNS points to primary (ca-central-1) | ![dns_primary](docs/dns_primary.png) |
+| 2    | Primary ALB returns 200 OK | ![primary_200](docs/primary_200.png) |
+| 3    | Primary ASG scaled to 0 | ![asg_down](docs/asg_down.png) |
+| 4    | Route 53 switches to secondary (us-east-1) | ![dns_secondary](docs/dns_secondary.png) |
+| 5    | Secondary ALB returns 200 OK | ![secondary_200](docs/secondary_200.png) |
+
+✅ **Failover succeeded in under 5 minutes without manual DNS changes.**
+
+### 🏗️ Architecture Overview
+![Architecture Diagram](docs/architecture.png)
