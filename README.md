@@ -139,6 +139,8 @@ Copy code
 - [02 — Route 53 Failover Drill](runbooks/02-failover-test.md)
 - [03 — Rollback to Primary and Cleanup](runbooks/03-rollback-cleanup.md)
 - [04 — Alarms and Evidence Capture](runbooks/04-alarms-and-screenshots.md)
+- [05 — Pause & Resume (Cost Control)](runbooks/05-pause-resume-cost.md)
+
 
 
 ## 🧹 Cleanup (Cost Control)
