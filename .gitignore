@@ -20,3 +20,7 @@ FETCH_HEAD
 # ignore large media
 *.mp4
 *.mov
+
+# ignore large media
+*.mp4
+*.mov
