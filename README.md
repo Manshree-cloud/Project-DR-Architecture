@@ -90,7 +90,7 @@ Copy code
 | 🖥️ | Primary ALB + ASG stack completed             | ![compute_primary](docs/compute_primary.png) |
 | 🖥️ | Secondary ALB + ASG stack completed           | ![compute_secondary](docs/compute_secondary.png) |
 | 🌐 | Route 53 hosted zone with weighted alias      | ![route53_hosted_zone](docs/route53_hosted_zone.png) |
-| 🌐 | DNS initially pointing to primary ALB         | ![alb_dns_primary_secondary](docs/alb_dns_primary_secondary.png) |
+| 🌐 | DNS initially pointing to primary ALB         | ![alb_dns_primary_secondary](docs/ALB_dns_primary&secondary.png) |
 
 ---
 
@@ -108,10 +108,8 @@ Copy code
 
 | Step | Description                                    | Screenshot |
 |------|-----------------------------------------------|------------|
-| ☁️ | Primary ALB healthy (200 OK)                    | ![primary_200](docs/primary_200.png) |
 | 🛑 | TG health check failure simulated               | ![tg_healthcheck](docs/tg_healthcheck.png) |
 | 🔁 | DNS switches to secondary automatically        | ![dns_secondary](docs/dns_secondary.png) |
-| ✅ | Secondary ALB healthy (200 OK)                 | ![secondary_200](docs/secondary_200.png) |
 
 ---
 
