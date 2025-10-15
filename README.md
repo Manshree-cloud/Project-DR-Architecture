@@ -73,11 +73,9 @@ aws-multi-region-dr-reference/
 |------|---------------------------------------|-----------|
 | 1    | Initial DNS points to primary (ca-central-1) | ![dns_primary](docs/dns_primary.png) |
 | 2    | Primary ALB returns 200 OK | ![primary_200](docs/primary_200.png) |
-| 3    | Primary ASG scaled to 0 | ![asg_down](docs/asg_down.png) |
-| 4    | Route 53 switches to secondary (us-east-1) | ![dns_secondary](docs/dns_secondary.png) |
-| 5    | Secondary ALB returns 200 OK | ![secondary_200](docs/secondary_200.png) |
-| Step | Description                                   | Screenshot |
-|------|-----------------------------------------------|------------|
+| 3    | Route 53 switches to secondary (us-east-1) | ![dns_secondary](docs/dns_secondary.png) |
+| 4    | Secondary ALB returns 200 OK | ![secondary_200](docs/secondary_200.png) |
+
 | 1️⃣ | Primary VPC + subnets deployed successfully   | ![vpc_create](docs/vpc_create.png) |
 | 2️⃣ | Secondary VPC + subnets deployed              | ![vpc_secondary](docs/vpc_secondary.png) |
 | 3️⃣ | Primary ALB + ASG stack completed             | ![compute_primary](docs/compute_primary.png) |
@@ -110,8 +108,6 @@ aws-multi-region-dr-reference/
 
 ## 📡 CloudWatch Alarms & SNS Notifications
 
-| Step | Description                          | Screenshot |
-|------|--------------------------------------|------------|
 | 🔸 | Target Group alarm fired              | ![alarm_tgpng](docs/alarm_tgpng.png) |
 | 🔸 | ASG InService alarm fired             | ![alarm_asg](docs/alarm_asg.png) |
 | 🔸 | Email notification received          | *(You can add a screenshot of your inbox here)* |
