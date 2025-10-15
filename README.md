@@ -90,7 +90,8 @@ Copy code
 | 🖥️ | Primary ALB + ASG stack completed             | ![compute_primary](docs/compute_primary.png) |
 | 🖥️ | Secondary ALB + ASG stack completed           | ![compute_secondary](docs/compute_secondary.png) |
 | 🌐 | Route 53 hosted zone with weighted alias      | ![route53_hosted_zone](docs/route53_hosted_zone.png) |
-| 🌐 | DNS initially pointing to primary ALB         | ![alb_dns_primary_secondary](docs/ALB_dns_primary&secondary.png) |
+| 🌐 | DNS initially pointing to primary ALB | ![alb_dns_primary_secondary](docs/alb_dns_primary_secondary.png) |
+
 
 ---
 
