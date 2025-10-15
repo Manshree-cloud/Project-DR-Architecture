@@ -15,3 +15,8 @@ node_modules/
 *.tfstate*
 .terraform/
 dr-key.pem
+FETCH_HEAD
+
+# ignore large media
+*.mp4
+*.mov
