@@ -133,6 +133,14 @@ Copy code
 
 ---
 
+## 📘 Runbooks
+
+- [01 — Initial DR Environment Deployment](runbooks/01-deploy.md)
+- [02 — Route 53 Failover Drill](runbooks/02-failover-test.md)
+- [03 — Rollback to Primary and Cleanup](runbooks/03-rollback-cleanup.md)
+- [04 — Alarms and Evidence Capture](runbooks/04-alarms-and-screenshots.md)
+
+
 ## 🧹 Cleanup (Cost Control)
 
 ```bash
