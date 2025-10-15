@@ -1,117 +1,168 @@
-# 🏗️ Project DR Architecture — Multi-Region AWS Disaster Recovery 
+# 🏗️ Project DR Architecture — Multi-Region AWS Disaster Recovery
 
 This repository contains a **cost-aware two-region Disaster Recovery (DR) reference architecture on AWS** using CloudFormation.  
-It showcases how to architect, deploy, and fail over a simple workload between regions in minutes.
+It showcases how to architect, deploy, and fail over a simple workload between regions in minutes — demonstrating **real-world RTO under 5 minutes**.
 
 ---
 
-## ✨ Key Highlights 
+## ✨ Key Highlights
 
-- **Architected a cost-aware two-region DR reference using custom VPCs, EC2 Launch Templates + ASG, and CloudFormation templates for reproducibility and peer review.**  
-- **Implemented S3 Cross-Region Replication (versioning + SSE) and validated failover; enforced IAM replication roles and least-privilege access for durability and security.**  
-- **Integrated monitoring, identity management, and failover automation into enterprise systems to ensure continuity with <5 min RTO with before/after validation screenshots.**  
-- **Configured CloudWatch alarms + SNS alerts (ASG health, EC2 CPU) for operational signaling; documented runbooks, diagrams, and recovery/cleanup steps.**  
-- **Applied Infrastructure as Code principles using CloudFormation and began modular Terraform prototypes for DR provisioning (state mgmt. via S3+DynamoDB), demonstrating cross-tool IaC capability.**  
-- **Mapped AWS patterns to Azure/GCP equivalents (EC2/ASG→VMSS, S3→Blob, CloudWatch→Monitor/Log Analytics, IAM→RBAC; Lambda→Functions/Run).**
+- 🧭 **Two-Region DR Reference:** Custom VPCs, EC2 Launch Templates, Auto Scaling Groups, and ALB with CloudFormation.
+- 🪣 **S3 Cross-Region Replication:** Versioning, SSE, IAM replication role with least privilege.
+- ⏱️ **<5 Min RTO:** Weighted Route 53 failover + ALB health checks.
+- 📡 **CloudWatch + SNS:** Alarms for TG health, ASG availability, and CPU utilization.
+- 🧠 **IaC Principles:** CloudFormation-first approach with a Terraform scaffold for portability.
+- ☁️ **Cloud Pattern Mapping:** AWS to Azure/GCP equivalents for cross-cloud DR strategies.
 
 ---
 
 ## 🏗️ Architecture Overview
 
-- **Primary Region:** `ca-central-1` 🇨🇦  
-- **Secondary Region:** `us-east-1` 🇺🇸  
-- **Core Components:**
-  - VPC, Public Subnets, ALB + ASG (EC2 NGINX “Hello from REGION”)
-  - Route 53 DNS failover with Health Checks
-  - S3 Cross-Region Replication
-  - CloudWatch + SNS for monitoring and alerting
-  - IAM least privilege for replication and automation
-  - IaC using CloudFormation with Terraform scaffold for future portability
+| Primary Region 🇨🇦 | Secondary Region 🇺🇸 |
+|--------------------|-----------------------|
+| `ca-central-1`     | `us-east-1`          |
+
+**Core Components**  
+- VPC, Subnets, ALB + ASG (NGINX “Hello from REGION”)  
+- Route 53 DNS weighted failover  
+- S3 Cross-Region Replication  
+- CloudWatch + SNS alerts  
+- IAM roles and replication permissions  
+- CloudFormation templates for reproducibility  
 
 ---
 
 ## 📂 Folder Structure
-```
-aws-multi-region-dr-reference/
+
+Project-DR-Architecture/
 ├─ README.md
 ├─ diagrams/
-│  └─ dr-architecture.drawio  (export PNG later)
+│ └─ dr-architecture.drawio
 ├─ cloudformation/
-│  ├─ primary-ca-central-1/
-│  │  ├─ network.yaml            # VPC, subnets, IGW, NAT, route tables
-│  │  ├─ compute.yaml            # LT, ASG, ALB, SGs, TargetGroup, Listener
-│  │  ├─ s3-primary.yaml         # Primary S3 bucket (versioning, SSE)
-│  │  └─ outputs.md
-│  ├─ secondary-us-east-1/
-│  │  ├─ network.yaml
-│  │  ├─ compute.yaml
-│  │  ├─ s3-secondary.yaml       # Secondary S3 bucket + replication role trust
-│  │  └─ outputs.md
-│  └─ global/
-│     ├─ route53-failover.yaml   # Hosted zone records + health check
-│     └─ sns-alarms.yaml         # SNS topic + subscriptions, CW alarms
+│ ├─ primary-ca-central-1/
+│ │ ├─ network.yaml
+│ │ ├─ compute.yaml
+│ │ └─ s3-primary.yaml
+│ ├─ secondary-us-east-1/
+│ │ ├─ network.yaml
+│ │ ├─ compute.yaml
+│ │ └─ s3-secondary.yaml
+│ └─ global/
+│ ├─ route53-failover.yaml
+│ └─ sns-alarms.yaml
 ├─ user-data/
-│  └─ nginx-bootstrap.sh         # prints “Hello from $REGION”
+│ └─ nginx-bootstrap.sh
 ├─ runbooks/
-│  ├─ 01-deploy.md
-│  ├─ 02-failover-test.md
-│  ├─ 03-rollback-cleanup.md
-│  └─ 04-alarms-and-screenshots.md
+│ ├─ 01-deploy.md
+│ ├─ 02-failover-test.md
+│ ├─ 03-rollback-cleanup.md
+│ └─ 04-alarms-and-screenshots.md
 ├─ terraform-prototype/
-│  ├─ modules/
-│  │  └─ vpc/ (scaffold only)
-│  └─ main.tf  (commented placeholders)
+│ └─ main.tf
 └─ scripts/
-   ├─ deploy_primary.sh
-   ├─ deploy_secondary.sh
-   ├─ setup_replication.sh
-   └─ teardown.sh
-```
- 📊 DR Failover Demo — Route 53 + ALB
+├─ deploy_primary.sh
+├─ deploy_secondary.sh
+├─ setup_replication.sh
+└─ teardown.sh
 
+yaml
+Copy code
 
-| 🔹  | Initial DNS points to primary (ca-central-1) | ![dns_primary](docs/dns_primary.png) |
-| 🔹  | Primary ALB returns 200 OK | ![primary_200](docs/primary_200.png) |
+---
 
-| 🔹  | Route 53 switches to secondary (us-east-1) | ![dns_secondary](docs/dns_secondary.png) |
-| 🔹  | Secondary ALB returns 200 OK | ![secondary_200](docs/secondary_200.png) |
+## 📊 DR Failover Demo — Route 53 + ALB
 
-|️ 🔹 | Primary VPC + subnets deployed successfully   | ![vpc_create](docs/vpc_create.png) |
-| 🔹 | Secondary VPC + subnets deployed              | ![vpc_secondary](docs/vpc_secondary.png) |
-| 🔹 | Primary ALB + ASG stack completed             | ![compute_primary](docs/compute_primary.png) |
-| 🔹 | Secondary ALB + ASG stack completed           | ![compute_secondary](docs/compute_secondary.png) |
-| 🔹 | Route 53 hosted zone with weighted alias      | ![route53_hosted_zone](docs/route53_hosted_zone.png) |
-| 🔹 | DNS initially pointing to primary ALB         | ![ALB_dns_primary & secondary](docs/ALB_dns_primary%20&%20secondary.png) |
+| Step | Description                                | Screenshot |
+|------|--------------------------------------------|------------|
+| 1️⃣ | Initial DNS points to primary (ca-central-1) | ![dns_primary](docs/dns_primary.png) |
+| 2️⃣ | Primary ALB returns 200 OK                  | ![primary_200](docs/primary_200.png) |
+| 3️⃣ | Route 53 switches to secondary (us-east-1)  | ![dns_secondary](docs/dns_secondary.png) |
+| 4️⃣ | Secondary ALB returns 200 OK               | ![secondary_200](docs/secondary_200.png) |
+
+---
+
+## 🏗️ Infrastructure Build — Step by Step
+
+| Step | Description                                   | Screenshot |
+|------|-----------------------------------------------|------------|
+| 🧱 | Primary VPC + subnets deployed successfully   | ![vpc_create](docs/vpc_create.png) |
+| 🧱 | Secondary VPC + subnets deployed              | ![vpc_secondary](docs/vpc_secondary.png) |
+| 🖥️ | Primary ALB + ASG stack completed             | ![compute_primary](docs/compute_primary.png) |
+| 🖥️ | Secondary ALB + ASG stack completed           | ![compute_secondary](docs/compute_secondary.png) |
+| 🌐 | Route 53 hosted zone with weighted alias      | ![route53_hosted_zone](docs/route53_hosted_zone.png) |
+| 🌐 | DNS initially pointing to primary ALB         | ![alb_dns_primary_secondary](docs/alb_dns_primary_secondary.png) |
 
 ---
 
 ## 🪣 S3 Cross-Region Replication
 
+| Step | Description                                     | Screenshot |
+|------|-------------------------------------------------|------------|
+| 🪣 | Primary S3 bucket — versioning + encryption on  | ![s3_primary_bucket](docs/s3-primary_bucket.png) |
+| 🪣 | Secondary S3 bucket — destination configured   | ![s3_secondary_bucket](docs/s3-secondary_bucket.png) |
+| 🪣 | Object successfully replicated across regions | ![s3_object_replicated](docs/s3_object_replicated.png) |
 
+---
 
-| 🔹 | Primary S3 bucket — versioning + encryption on  | ![s3_primary_bucket](docs/s3-primary_bucket.png) |
-| 🔹 | Secondary S3 bucket — destination configured   | ![s3_secondary_bucket](docs/s3-secondary_bucket.png) |
-| 🔹 | Object successfully replicated across regions | ![s3_object_replicated](docs/s3_object_replicated.png) |
+## 🛰️ Route 53 DR Failover Test (RTO < 5 min)
 
+| Step | Description                                    | Screenshot |
+|------|-----------------------------------------------|------------|
+| ☁️ | Primary ALB healthy (200 OK)                    | ![primary_200](docs/primary_200.png) |
+| 🛑 | TG health check failure simulated               | ![tg_healthcheck](docs/tg_healthcheck.png) |
+| 🔁 | DNS switches to secondary automatically        | ![dns_secondary](docs/dns_secondary.png) |
+| ✅ | Secondary ALB healthy (200 OK)                 | ![secondary_200](docs/secondary_200.png) |
 
-
-## 🛰️ Route 53 DR Failover Demo (RTO < 5 min)
-
-
-| 🔹 | Primary ALB healthy (200 OK)                    | ![primary_200](docs/primary_200.png) |
-| 🔹 | TG health check failure simulated               | ![tg_healthcheck](docs/tg_healthcheck.png) |
-| 🔹 | DNS switches to secondary automatically        | ![dns_secondary](docs/dns_secondary.png) |
-| 🔹 | Secondary ALB healthy (200 OK)                 | ![secondary_200](docs/secondary_200.png) |
-
+---
 
 ## 📡 CloudWatch Alarms & SNS Notifications
 
-| 🔸 | Target Group alarm fired              | ![alarm_tgpng](docs/alarm_tgpng.png) |
-| 🔸 | ASG InService alarm fired             | ![alarm_asg](docs/alarm_asg.png) |
-| 🔸 | Email notification received          | *(You can add a screenshot of your inbox here)* |
+| Event | Description                        | Screenshot |
+|-------|------------------------------------|------------|
+| 🚨 | Target Group alarm fired             | ![alarm_tgpng](docs/alarm_tgpng.png) |
+| 🚨 | ASG InService alarm fired            | ![alarm_asg](docs/alarm_asg.png) |
+| ✉️ | Email notification received         | *(screenshot of inbox)* |
+
+✅ Failover succeeded in under **5 minutes** without any manual DNS changes.
 
 ---
-✅ **Failover succeeded in under 5 minutes without manual DNS changes.**
 
 ## 🎥 Demo Video
-[![Watch the demo](docs/thumbnail.png)](https://github.com/Manshree-cloud/Project-DR-Architecture/raw/main/docs/aws-dr-failover-demo.mp4)
+
+📽️ Watch the live failover:  
+[▶️ AWS DR Failover Demo (1:30)](https://github.com/Manshree-cloud/Project-DR-Architecture/raw/main/docs/aws-dr-failover-demo.mp4)
+
+---
+
+## 🧹 Cleanup (Cost Control)
+
+```bash
+aws cloudformation delete-stack --stack-name dr-cmp-primary --region ca-central-1
+aws cloudformation delete-stack --stack-name dr-cmp-secondary --region us-east-1
+aws cloudformation delete-stack --stack-name dr-net-primary --region ca-central-1
+aws cloudformation delete-stack --stack-name dr-net-secondary --region us-east-1
+aws s3 rb s3://<primary-bucket> --force
+aws s3 rb s3://<secondary-bucket> --force
+👩‍💻 Author
+Manshree Patel
+AWS Certified Solutions Architect – Associate
+Cloud & Platform Engineer | Event-driven Architectures | DR & HA Patterns
+
+🌐 GitHub • ☁️ AWS Community Builder (in progress)
+
+🛡️ “Resilience isn’t optional. It’s engineered.” — Multi-Region DR, Automated.
+
+pgsql
+Copy code
+
+---
+
+✅ **What’s improved in this version:**  
+- Clean emoji + icons (consistent for each section)  
+- Proper table alignment  
+- No special characters in image filenames  
+- CTA-style demo video link  
+- Clear folder structure & cleanup commands  
+- Professional section flow like a **real solution reference doc**.
+
+Would you like me to also generate a **top banner / cover image** (e.g., “AWS Multi-Region DR”) to make the repo heade
