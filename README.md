@@ -120,7 +120,7 @@ Copy code
 |-------|------------------------------------|------------|
 | 🚨 | Target Group alarm fired             | ![alarm_tgpng](docs/alarm_tgpng.png) |
 | 🚨 | ASG InService alarm fired            | ![alarm_asg](docs/alarm_asg.png) |
-| ✉️ | Email notification received         | *(screenshot of inbox)* |
+| ✉️ | Email notification received         | ![emailpng](docs/email.png)|
 
 ✅ Failover succeeded in under **5 minutes** without any manual DNS changes.
 
