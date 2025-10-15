@@ -72,6 +72,7 @@ aws-multi-region-dr-reference/
 
 | 🔹  | Initial DNS points to primary (ca-central-1) | ![dns_primary](docs/dns_primary.png) |
 | 🔹  | Primary ALB returns 200 OK | ![primary_200](docs/primary_200.png) |
+
 | 🔹  | Route 53 switches to secondary (us-east-1) | ![dns_secondary](docs/dns_secondary.png) |
 | 🔹  | Secondary ALB returns 200 OK | ![secondary_200](docs/secondary_200.png) |
 
