@@ -152,17 +152,5 @@ Cloud & Platform Engineer | Event-driven Architectures | DR & HA Patterns
 
 🛡️ “Resilience isn’t optional. It’s engineered.” — Multi-Region DR, Automated.
 
-pgsql
-Copy code
-
 ---
 
-✅ **What’s improved in this version:**  
-- Clean emoji + icons (consistent for each section)  
-- Proper table alignment  
-- No special characters in image filenames  
-- CTA-style demo video link  
-- Clear folder structure & cleanup commands  
-- Professional section flow like a **real solution reference doc**.
-
-Would you like me to also generate a **top banner / cover image** (e.g., “AWS Multi-Region DR”) to make the repo heade
