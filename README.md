@@ -76,7 +76,47 @@ aws-multi-region-dr-reference/
 | 3    | Primary ASG scaled to 0 | ![asg_down](docs/asg_down.png) |
 | 4    | Route 53 switches to secondary (us-east-1) | ![dns_secondary](docs/dns_secondary.png) |
 | 5    | Secondary ALB returns 200 OK | ![secondary_200](docs/secondary_200.png) |
+| Step | Description                                   | Screenshot |
+|------|-----------------------------------------------|------------|
+| 1️⃣ | Primary VPC + subnets deployed successfully   | ![vpc_create](docs/vpc_create.png) |
+| 2️⃣ | Secondary VPC + subnets deployed              | ![vpc_secondary](docs/vpc_secondary.png) |
+| 3️⃣ | Primary ALB + ASG stack completed             | ![compute_primary](docs/compute_primary.png) |
+| 4️⃣ | Secondary ALB + ASG stack completed           | ![compute_secondary](docs/compute_secondary.png) |
+| 5️⃣ | Route 53 hosted zone with weighted alias      | ![route53_hosted_zone](docs/route53_hosted_zone.png) |
+| 6️⃣ | DNS initially pointing to primary ALB         | ![ALB_dns_primary & secondary](docs/ALB_dns_primary%20&%20secondary.png) |
 
+---
+
+## 🪣 S3 Cross-Region Replication
+
+| Step | Description                                     | Screenshot |
+|------|-------------------------------------------------|------------|
+| 7️⃣ | Primary S3 bucket — versioning + encryption on  | ![s3_primary_bucket](docs/s3-primary_bucket.png) |
+| 8️⃣ | Secondary S3 bucket — destination configured   | ![s3_secondary_bucket](docs/s3-secondary_bucket.png) |
+| 9️⃣ | Object successfully replicated across regions | ![s3_object_replicated](docs/s3_object_replicated.png) |
+
+---
+
+## 🛰️ Route 53 DR Failover Demo (RTO < 5 min)
+
+| Step | Description                                    | Screenshot |
+|------|-----------------------------------------------|------------|
+| 🔹 | Primary ALB healthy (200 OK)                    | ![primary_200](docs/primary_200.png) |
+| 🔹 | TG health check failure simulated               | ![tg_healthcheck](docs/tg_healthcheck.png) |
+| 🔹 | DNS switches to secondary automatically        | ![dns_secondary](docs/dns_secondary.png) |
+| 🔹 | Secondary ALB healthy (200 OK)                 | ![secondary_200](docs/secondary_200.png) |
+
+---
+
+## 📡 CloudWatch Alarms & SNS Notifications
+
+| Step | Description                          | Screenshot |
+|------|--------------------------------------|------------|
+| 🔸 | Target Group alarm fired              | ![alarm_tgpng](docs/alarm_tgpng.png) |
+| 🔸 | ASG InService alarm fired             | ![alarm_asg](docs/alarm_asg.png) |
+| 🔸 | Email notification received          | *(You can add a screenshot of your inbox here)* |
+
+---
 ✅ **Failover succeeded in under 5 minutes without manual DNS changes.**
 
 ## 🎥 Demo Video
