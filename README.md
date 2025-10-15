@@ -69,42 +69,39 @@ aws-multi-region-dr-reference/
 ```
  📊 DR Failover Demo — Route 53 + ALB
 
-| Step | Description                           | Evidence |
-|------|---------------------------------------|-----------|
-| 1    | Initial DNS points to primary (ca-central-1) | ![dns_primary](docs/dns_primary.png) |
-| 2    | Primary ALB returns 200 OK | ![primary_200](docs/primary_200.png) |
-| 3    | Route 53 switches to secondary (us-east-1) | ![dns_secondary](docs/dns_secondary.png) |
-| 4    | Secondary ALB returns 200 OK | ![secondary_200](docs/secondary_200.png) |
 
-| 1️⃣ | Primary VPC + subnets deployed successfully   | ![vpc_create](docs/vpc_create.png) |
-| 2️⃣ | Secondary VPC + subnets deployed              | ![vpc_secondary](docs/vpc_secondary.png) |
-| 3️⃣ | Primary ALB + ASG stack completed             | ![compute_primary](docs/compute_primary.png) |
-| 4️⃣ | Secondary ALB + ASG stack completed           | ![compute_secondary](docs/compute_secondary.png) |
-| 5️⃣ | Route 53 hosted zone with weighted alias      | ![route53_hosted_zone](docs/route53_hosted_zone.png) |
-| 6️⃣ | DNS initially pointing to primary ALB         | ![ALB_dns_primary & secondary](docs/ALB_dns_primary%20&%20secondary.png) |
+| 🔹  | Initial DNS points to primary (ca-central-1) | ![dns_primary](docs/dns_primary.png) |
+| 🔹  | Primary ALB returns 200 OK | ![primary_200](docs/primary_200.png) |
+| 🔹  | Route 53 switches to secondary (us-east-1) | ![dns_secondary](docs/dns_secondary.png) |
+| 🔹  | Secondary ALB returns 200 OK | ![secondary_200](docs/secondary_200.png) |
+
+|️ 🔹 | Primary VPC + subnets deployed successfully   | ![vpc_create](docs/vpc_create.png) |
+| 🔹 | Secondary VPC + subnets deployed              | ![vpc_secondary](docs/vpc_secondary.png) |
+| 🔹 | Primary ALB + ASG stack completed             | ![compute_primary](docs/compute_primary.png) |
+| 🔹 | Secondary ALB + ASG stack completed           | ![compute_secondary](docs/compute_secondary.png) |
+| 🔹 | Route 53 hosted zone with weighted alias      | ![route53_hosted_zone](docs/route53_hosted_zone.png) |
+| 🔹 | DNS initially pointing to primary ALB         | ![ALB_dns_primary & secondary](docs/ALB_dns_primary%20&%20secondary.png) |
 
 ---
 
 ## 🪣 S3 Cross-Region Replication
 
-| Step | Description                                     | Screenshot |
-|------|-------------------------------------------------|------------|
-| 7️⃣ | Primary S3 bucket — versioning + encryption on  | ![s3_primary_bucket](docs/s3-primary_bucket.png) |
-| 8️⃣ | Secondary S3 bucket — destination configured   | ![s3_secondary_bucket](docs/s3-secondary_bucket.png) |
-| 9️⃣ | Object successfully replicated across regions | ![s3_object_replicated](docs/s3_object_replicated.png) |
 
----
+
+| 🔹 | Primary S3 bucket — versioning + encryption on  | ![s3_primary_bucket](docs/s3-primary_bucket.png) |
+| 🔹 | Secondary S3 bucket — destination configured   | ![s3_secondary_bucket](docs/s3-secondary_bucket.png) |
+| 🔹 | Object successfully replicated across regions | ![s3_object_replicated](docs/s3_object_replicated.png) |
+
+
 
 ## 🛰️ Route 53 DR Failover Demo (RTO < 5 min)
 
-| Step | Description                                    | Screenshot |
-|------|-----------------------------------------------|------------|
+
 | 🔹 | Primary ALB healthy (200 OK)                    | ![primary_200](docs/primary_200.png) |
 | 🔹 | TG health check failure simulated               | ![tg_healthcheck](docs/tg_healthcheck.png) |
 | 🔹 | DNS switches to secondary automatically        | ![dns_secondary](docs/dns_secondary.png) |
 | 🔹 | Secondary ALB healthy (200 OK)                 | ![secondary_200](docs/secondary_200.png) |
 
----
 
 ## 📡 CloudWatch Alarms & SNS Notifications
 
