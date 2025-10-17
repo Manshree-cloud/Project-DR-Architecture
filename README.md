@@ -155,7 +155,7 @@ aws s3 rb s3://<secondary-bucket> --force
 👩‍💻 Author
 Manshree Patel
 AWS Certified Solutions Architect – Associate
-Cloud & Platform Engineer | Event-driven Architectures | DR & HA Patterns
+Cloud & Platform consultant| Event-driven Architectures | DR & HA Patterns
 
 🌐 GitHub • ☁️ AWS Community Builder (in progress)
 
